@@ -7,8 +7,14 @@ from rest_framework import status
 
 
 class FlashcardList(APIView):
-    def get(self, request):
-        flashcard = Flashcard.objects.all()
+    def get_object(self, collection):
+        try:
+            return Flashcard.objects.filter(collection=collection)
+        except Flashcard.DoesNotExist:
+            raise Http404
+
+    def get(self, request, collection):
+        flashcard = self.get_object(collection)
         serializer = FlashcardSerializer(flashcard, many=True)
         return Response(serializer.data)
 
